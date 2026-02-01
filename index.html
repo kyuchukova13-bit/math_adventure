@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Математическо Приключение - Финал</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #ffd600; --dark: #01579b; --pink: #ec407a; }
+        * { box-sizing: border-box; font-family: 'Fredoka', sans-serif; touch-action: manipulation; }
+        body { margin: 0; background: #e0f7fa; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+
+        /* ИКОНА НАЧАЛО */
+        #home-link { position: absolute; top: 15px; left: 15px; z-index: 2500; cursor: pointer; font-size: 2.5rem; background: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 15px; box-shadow: 0 5px 0 #ccc; text-decoration: none; border: none; }
+
+        /* МЕНЮ */
+        #menu { position: absolute; inset: 0; background: linear-gradient(135deg, #0288d1, #26c6da); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .main-title { font-size: 5.5rem; font-weight: 900; color: white; text-shadow: 5px 5px 0px var(--dark); margin-bottom: 30px; }
+        .instructions { background: rgba(255, 255, 255, 0.3); padding: 25px 40px; border-radius: 30px; color: #003e6b; width: 95%; max-width: 1100px; margin-bottom: 40px; border: 4px solid white; }
+        .instructions p { font-size: 1.7rem; font-weight: 900; margin: 10px 0; text-transform: uppercase; white-space: nowrap; text-align: center; }
+        .menu-row { display: flex; gap: 30px; }
+        .menu-btn { padding: 20px 50px; border-radius: 40px; border: none; font-size: 2.2rem; font-weight: 900; cursor: pointer; color: white; box-shadow: 0 8px 0 rgba(0,0,0,0.2); transition: 0.1s; }
+        .btn-add { background: var(--gold); color: #444; box-shadow: 0 8px 0 #fbc02d; }
+        .btn-sub { background: var(--pink); box-shadow: 0 8px 0 #ad1457; }
+
+        /* ПРОГРЕС */
+        #progress-container { width: 100%; height: 15px; background: #b3e5fc; position: relative; z-index: 1000; }
+        #fill { width: 0%; height: 100%; background: var(--gold); transition: 0.5s; }
+
+        /* СЦЕНА */
+        #scene { height: 43vh; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px; background: #81c784; border-radius: 0 0 50px 50px; overflow: hidden; border-bottom: 8px solid #66bb6a; }
+        #axis-line { position: absolute; bottom: 78px; width: 95%; height: 4px; border-bottom: 4px dashed rgba(255,255,255,0.7); z-index: 2; }
+        
+        .spot { width: 95px; height: 130px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 10; cursor: pointer; }
+        .spot img { width: 95px; height: 95px; object-fit: contain; margin-bottom: -10px; }
+        .spot span { font-size: 3.8rem; font-weight: 900; color: white; text-shadow: 3px 3px 5px rgba(0,0,0,0.5); position: relative; z-index: 11; }
+
+        #hero { position: absolute; width: 100px; height: 100px; z-index: 100; bottom: 85px; transition: all 0.5s ease-out; }
+        .arc-line { position: absolute; border: 5px dashed white; border-radius: 50% 50% 0 0; pointer-events: none; z-index: 5; border-bottom: none; }
+
+        /* РАБОТНА ЗОНА */
+        #workspace { flex: 1; display: flex; align-items: center; justify-content: space-around; padding: 10px; background: white; }
+        #task-side { font-size: 7rem; font-weight: 900; color: var(--dark); display: flex; align-items: center; gap: 15px; }
+        .ans-box { width: 190px; height: 150px; border: 10px solid var(--dark); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 6.5rem; background: #f4f4f4; }
+
+        /* КЛАВИАТУРА */
+        #numpad { display: grid; grid-template-columns: repeat(3, 85px); gap: 12px; background: #90a4ae; padding: 20px; border-radius: 30px; }
+        .num-btn { height: 75px; font-size: 2.8rem; border-radius: 15px; border: none; background: white; cursor: pointer; font-weight: 900; box-shadow: 0 6px 0 #546e7a; color: var(--dark); }
+
+        #action-btn { position: absolute; top: 43.5vh; left: 50%; transform: translateX(-50%); padding: 15px 60px; font-size: 2.2rem; background: var(--gold); border-radius: 50px; border: none; box-shadow: 0 8px 0 #fbc02d; font-weight: 900; cursor: pointer; z-index: 1500; }
+
+        /* ФИНАЛЕН ЕКРАН */
+        #win-modal { position: absolute; inset: 0; background: rgba(1, 87, 155, 0.98); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 30px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 30px; margin: 30px; border: 3px solid var(--gold); }
+        .stat-item { font-size: 1.8rem; font-weight: 700; text-align: left; }
+        .stat-val { color: var(--gold); font-size: 2.2rem; font-weight: 900; }
+        .motivation { font-size: 2.5rem; color: #fff; margin-bottom: 20px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<button id="home-link" onclick="location.reload()">🏠</button>
+<div id="progress-container"><div id="fill"></div></div>
+
+<div id="menu">
+    <div class="main-title">УМНИТЕ ЖИВОТНИ</div>
+    <div class="instructions">
+        <p>1. ИЗБЕРИ ПЪРВОТО ЧИСЛО ВЪРХУ ПЪТЕЧКАТА.</p>
+        <p>2. ИЗПОЛЗВАЙ БУТОНА "СКОК", ЗА ДА ПРЕБРОИШ СТЪПКИТЕ.</p>
+        <p>3. НАПИШИ ОТГОВОРА НА КЛАВИАТУРАТА.</p>
+    </div>
+    <div class="menu-row">
+        <button class="menu-btn btn-add" onclick="init('add')">🐸 СЪБИРАНЕ</button>
+        <button class="menu-btn btn-sub" onclick="init('sub')">🦋 ИЗВАЖДАНЕ</button>
+    </div>
+    <div style="margin-top:40px; color:white; font-weight:900; font-size: 1.3rem;">Автор: Дочка Кючукова </div>
+</div>
+
+<div id="win-modal">
+    <h1 id="win-title" style="font-size: 4.5rem; color: var(--gold); margin: 0;">СТРАХОТНА РАБОТА! 🌟</h1>
+    <div class="stats-grid">
+        <div class="stat-item">РЕШЕНИ ЗАДАЧИ:</div><div class="stat-val" id="res-tasks">0</div>
+        <div class="stat-item">ГРЕШКИ:</div><div class="stat-val" id="res-errors">0</div>
+        <div class="stat-item">ВРЕМЕ:</div><div class="stat-val" id="res-time">0:00</div>
+    </div>
+    <p class="motivation" id="res-msg">Ти си истински математик!</p>
+    <div class="menu-row" id="final-buttons">
+        <button class="menu-btn btn-add" onclick="continueGame()">ПРОДЪЛЖИ</button>
+        <button class="menu-btn btn-sub" onclick="finishGame()">КРАЙ</button>
+    </div>
+</div>
+
+<div id="scene">
+    <div id="axis-line"></div>
+    <div id="spots-container" style="display:flex; gap:5px;"></div>
+    <img id="hero" src="">
+</div>
+
+<button id="action-btn">СКОК!</button>
+
+<div id="workspace">
+    <div id="task-side">
+        <span id="v1">0</span> <span id="op">+</span> <span id="v2">0</span> = 
+        <div class="ans-box" id="ans">?</div>
+    </div>
+    <div id="numpad">
+        <button class="num-btn" onclick="press(7)">7</button><button class="num-btn" onclick="press(8)">8</button><button class="num-btn" onclick="press(9)">9</button>
+        <button class="num-btn" onclick="press(4)">4</button><button class="num-btn" onclick="press(5)">5</button><button class="num-btn" onclick="press(6)">6</button>
+        <button class="num-btn" onclick="press(1)">1</button><button class="num-btn" onclick="press(2)">2</button><button class="num-btn" onclick="press(3)">3</button>
+        <button class="num-btn" style="grid-column: span 3; height:70px" onclick="press(0)">0</button>
+    </div>
+</div>
+
+<script>
+    const IMG = { leaf: "1.png", frog: "2.png", flower: "flower.png", butterfly: "butterfly.png" };
+    let audioCtx, startTime, timerInterval;
+    let mode = '', task = {}, cur = -1, score = 0, errors = 0, currentInput = "";
+
+    function init(m) { 
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mode = m; 
+        document.getElementById('menu').style.display = 'none'; 
+        startTime = Date.now();
+        next(); 
+    }
+
+    function playSound(isFrog) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (isFrog) {
+        // ИМИТАЦИЯ НА КВАКАНЕ
+        osc.type = 'sawtooth'; 
+        // Започваме от ниска честота и рязко я вдигаме и сваляме
+        osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+        osc.frequency.linearRampToValueAtTime(120, audioCtx.currentTime + 0.15);
+        
+        filter.type = 'bandpass';
+        filter.frequency.value = 500; // Подчертава "кухия" звук на квакането
+        
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+    } else {
+        // НЕЖЕН ЗВЪН ЗА ПЕПЕРУДАТА
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    }
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2);
+}
+
+    function next() {
+        if (score > 0 && score % 5 === 0 && document.getElementById('win-modal').style.display !== 'flex') {
+            showStats(false); return;
+        }
+        document.querySelectorAll('.arc-line').forEach(a => a.remove());
+        const isA = (mode === 'add');
+        const n1 = isA ? Math.floor(Math.random() * 8) : Math.floor(Math.random() * 6) + 5;
+        const n2 = isA ? Math.floor(Math.random() * (11 - n1)) || 1 : Math.floor(Math.random() * (n1 - 1)) + 1;
+
+        task = { n1, n2, isA, ans: (isA ? n1 + n2 : n1 - n2).toString() };
+        document.getElementById('v1').innerText = n1;
+        document.getElementById('v2').innerText = n2;
+        document.getElementById('op').innerText = isA ? '+' : '-';
+        document.getElementById('ans').innerText = '?';
+        document.getElementById('ans').style.color = 'var(--dark)';
+        currentInput = "";
+
+        const h = document.getElementById('hero');
+        h.src = isA ? IMG.frog : IMG.butterfly;
+        h.style.display = 'none';
+        
+        const container = document.getElementById('spots-container');
+        container.innerHTML = '';
+        for (let i = 0; i <= 10; i++) {
+            const s = document.createElement('div');
+            s.className = 'spot'; s.id = 's' + i;
+            const imgPath = isA ? IMG.leaf : IMG.flower;
+            const filter = !isA ? `filter:hue-rotate(${i*40}deg)` : '';
+            s.innerHTML = `<img src="${imgPath}" style="${filter}"><span>${i}</span>`;
+            s.onclick = () => pick(i);
+            container.appendChild(s);
+        }
+        cur = -1;
+        document.getElementById('action-btn').style.display = 'none';
+        document.getElementById('fill').style.width = ((score % 5) * 20) + "%";
+    }
+
+    function pick(i) {
+        if (cur !== -1 || i !== task.n1) return;
+        cur = i;
+        document.getElementById('hero').style.display = 'block';
+        updateHero(false);
+        document.getElementById('action-btn').style.display = 'block';
+    }
+
+    function updateHero(moving) {
+        const s = document.getElementById('s' + cur);
+        const scRect = document.getElementById('scene').getBoundingClientRect();
+        const sRect = s.getBoundingClientRect();
+        const h = document.getElementById('hero');
+        const targetL = sRect.left - scRect.left + (sRect.width / 2) - 50;
+        if (moving) {
+            playSound(task.isA);
+            drawArc(h.offsetLeft + 50, targetL + 50);
+            h.style.bottom = "165px"; setTimeout(() => h.style.bottom = "85px", 250);
+        }
+        h.style.left = targetL + 'px';
+    }
+
+    function drawArc(x1, x2) {
+        const arc = document.createElement('div');
+        arc.className = 'arc-line';
+        const w = Math.abs(x2 - x1);
+        arc.style.width = w + 'px';
+        arc.style.height = (w * 0.5) + "px";
+        arc.style.left = Math.min(x1, x2) + 'px';
+        arc.style.bottom = "110px";
+        document.getElementById('scene').appendChild(arc);
+    }
+
+    document.getElementById('action-btn').onclick = () => {
+        cur = task.isA ? cur + 1 : cur - 1;
+        if(cur < 0) cur = 0; if(cur > 10) cur = 10;
+        updateHero(true);
+    };
+
+    function press(v) {
+        if (cur === -1) return;
+        currentInput += v.toString();
+        document.getElementById('ans').innerText = currentInput;
+        if (currentInput.length === task.ans.length) {
+            if (currentInput === task.ans) {
+                score++;
+                document.getElementById('ans').style.color = '#4caf50';
+                document.getElementById('fill').style.width = ((score % 5 || 5) * 20) + "%";
+                setTimeout(next, 1200);
+            } else {
+                errors++;
+                document.getElementById('ans').style.color = '#ff5252';
+                setTimeout(() => { currentInput = ""; document.getElementById('ans').innerText = "?"; document.getElementById('ans').style.color = 'var(--dark)'; }, 800);
+            }
+        }
+    }
+
+    function showStats(isFinal) {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const min = Math.floor(elapsed / 60);
+        const sec = elapsed % 60;
+        document.getElementById('res-tasks').innerText = score;
+        document.getElementById('res-errors').innerText = errors;
+        document.getElementById('res-time').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+        
+        if(isFinal) {
+            document.getElementById('win-title').innerText = "КРАЙ НА ИГРАТА!";
+            document.getElementById('res-msg').innerText = "Ти се справи чудесно! Гордеем се с теб!";
+            document.getElementById('final-buttons').innerHTML = '<button class="menu-btn btn-add" onclick="location.reload()">НОВА ИГРА</button>';
+        }
+        document.getElementById('win-modal').style.display = 'flex';
+    }
+
+    function continueGame() {
+        document.getElementById('win-modal').style.display = 'none';
+        document.getElementById('fill').style.width = "0%";
+        score++; next(); score--;
+    }
+
+    function finishGame() {
+        showStats(true);
+    }
+</script>
+</body>
+</html>
